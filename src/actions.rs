@@ -233,6 +233,10 @@ pub fn copy_text(s: &AppState, text: &str) {
 
 fn copy_with_tool(text: &str) -> bool {
     use std::{io::Write, process::{Command, Stdio}};
+    // Windows: the chrome document's navigator.clipboard handles Unicode correctly.
+    if cfg!(windows) {
+        return false;
+    }
     let wayland = std::env::var_os("WAYLAND_DISPLAY").is_some();
     let tools: &[(&str, &[&str])] = if wayland {
         &[("wl-copy", &[]), ("xclip", &["-selection", "clipboard"]), ("xsel", &["-ib"])]

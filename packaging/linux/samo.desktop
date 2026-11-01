@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Samo
+GenericName=Web Browser
+GenericName[ru]=Веб-браузер
+GenericName[uk]=Веб-браузер
+Comment=Smooth, deeply customizable Chromium browser
+Comment[ru]=Плавный браузер на Chromium с глубокой кастомизацией
+Comment[uk]=Плавний браузер на Chromium з глибоким налаштуванням
+Exec=samo %U
+Icon=samo
+Terminal=false
+StartupNotify=true
+StartupWMClass=samo
+Categories=Network;WebBrowser;
+MimeType=text/html;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+Keywords=browser;web;internet;chromium;

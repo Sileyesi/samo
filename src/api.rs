@@ -314,7 +314,7 @@ pub fn dispatch(s: &mut AppState, cmd: &str, a: Value, frame_url: &str) -> Res {
             Ok(json!({ "config": s.cfg.to_json() }))
         }
         "config.openFile" => {
-            xdg_open(&paths::config_file().to_string_lossy());
+            open_external(&paths::config_file().to_string_lossy());
             ok()
         }
         "theme.list" => Ok(json!({ "items": themes::list() })),

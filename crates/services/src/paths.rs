@@ -4,6 +4,7 @@
 //! `$SAMO_HOME` overrides everything (config in `$SAMO_HOME/config`, data in `$SAMO_HOME/data`),
 //! which is handy for tests and portable setups; otherwise `$XDG_CONFIG_HOME` / `$XDG_DATA_HOME`
 //! are honored, falling back to `~/.config` / `~/.local/share`.
+//! On Windows: config in `%APPDATA%\Samo`, data in `%LOCALAPPDATA%\Samo`.
 
 use std::{
     env,
@@ -36,6 +37,9 @@ fn config_base() -> PathBuf {
     if let Some(h) = env_dir("SAMO_HOME") {
         return h.join("config");
     }
+    if cfg!(windows) {
+        return env_dir("APPDATA").unwrap_or_else(home).join("Samo");
+    }
     env_dir("XDG_CONFIG_HOME")
         .unwrap_or_else(|| home().join(".config"))
         .join(APP)
@@ -44,6 +48,9 @@ fn config_base() -> PathBuf {
 fn data_base() -> PathBuf {
     if let Some(h) = env_dir("SAMO_HOME") {
         return h.join("data");
+    }
+    if cfg!(windows) {
+        return env_dir("LOCALAPPDATA").unwrap_or_else(home).join("Samo");
     }
     env_dir("XDG_DATA_HOME")
         .unwrap_or_else(|| home().join(".local/share"))

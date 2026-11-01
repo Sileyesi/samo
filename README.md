@@ -4,7 +4,16 @@
 
 Весь интерфейс (вкладки, тулбар, адресная строка, палитра, меню) — это HTML/CSS/JS в отдельном CEF-оверлее. Поэтому любую деталь можно перекрасить или переделать темой или `user.css`, без пересборки.
 
-## Запуск
+## Установка
+
+Готовые сборки лежат в [Releases](https://github.com/Sileyesi/samo/releases):
+
+- **Windows:** установщик `Samo-…-windows-x64-setup.exe` (права администратора не нужны) или portable `.zip`.
+- **Linux:** `Samo-…-x86_64.AppImage` или `samo-…-linux-x86_64.tar.gz` → `./install.sh`. Установщик добавляет Samo в меню приложений с иконкой и ставит его в `~/.local/opt/samo`.
+
+Собрать установщики самому: `scripts/package-linux.sh` (Linux) и `scripts/package-windows.ps1` (Windows, нужны MSVC, Ninja и Inno Setup). Релиз в CI собирается по тегу `v*` (`.github/workflows/release.yml`).
+
+## Запуск из исходников
 
 ```bash
 scripts/run.sh            # debug-сборка + запуск

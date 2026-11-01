@@ -109,15 +109,16 @@ pub fn is_recordable(url: &str) -> bool {
     url.starts_with("http://") || url.starts_with("https://") || url.starts_with("file://")
 }
 
-/// Opens a path/URL with the desktop default handler.
-pub fn xdg_open(target: &str) {
-    if let Err(e) = std::process::Command::new("xdg-open")
+/// Opens a path/URL with the desktop default handler (`xdg-open` / Explorer).
+pub fn open_external(target: &str) {
+    let opener = if cfg!(windows) { "explorer" } else { "xdg-open" };
+    if let Err(e) = std::process::Command::new(opener)
         .arg(target)
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
         .spawn()
     {
-        vlog!(warn, "xdg-open {target}: {e}");
+        vlog!(warn, "{opener} {target}: {e}");
     }
 }

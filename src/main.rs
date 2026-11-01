@@ -1,4 +1,5 @@
 //! Samo — a Chromium (CEF) browser with an HTML chrome.
+#![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 #[macro_use]
 mod util;

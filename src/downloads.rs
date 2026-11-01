@@ -163,7 +163,7 @@ pub fn list(s: &AppState) -> Value {
 
 pub fn open(s: &AppState, id: u32) -> bool {
     let Some(e) = s.downloads.items.get(&id) else { return false };
-    xdg_open(&e.path.to_string_lossy());
+    open_external(&e.path.to_string_lossy());
     true
 }
 
@@ -184,7 +184,7 @@ pub fn show_in_folder(s: &AppState, id: u32) -> bool {
             .status()
             .is_ok_and(|s| s.success());
         if !ok && let Some(dir) = path.parent() {
-            xdg_open(&dir.to_string_lossy());
+            open_external(&dir.to_string_lossy());
         }
     });
     true

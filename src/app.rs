@@ -19,10 +19,14 @@ pub struct EngineFlags {
 impl EngineFlags {
     pub fn from_config(cfg: &Config) -> Self {
         let e = &cfg.engine;
-        let ozone = match e.ozone_platform.as_str() {
-            "wayland" => Some("wayland".to_string()),
-            "x11" => Some("x11".to_string()),
-            _ => std::env::var_os("WAYLAND_DISPLAY").map(|_| "wayland".to_string()),
+        let ozone = if !cfg!(target_os = "linux") {
+            None
+        } else {
+            match e.ozone_platform.as_str() {
+                "wayland" => Some("wayland".to_string()),
+                "x11" => Some("x11".to_string()),
+                _ => std::env::var_os("WAYLAND_DISPLAY").map(|_| "wayland".to_string()),
+            }
         };
         Self {
             ozone,

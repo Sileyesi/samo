@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CEF_VERSION: "154.0.34"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build cmake
+      - name: Set CEF path
+        run: echo "CEF_PATH=$HOME/cef" >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: ~/cef
+          key: cef-${{ env.CEF_VERSION }}-linux-x86_64
+      - uses: Swatinem/rust-cache@v2
+      - name: Build and bundle
+        run: scripts/package-linux.sh "${GITHUB_REF_NAME}"
+      - name: AppImage
+        run: |
+          set -euo pipefail
+          bundle=$(ls -d dist/samo-*-linux-x86_64 | head -1)
+          version=$(basename "$bundle" | sed 's/^samo-//; s/-linux-x86_64$//')
+          app=dist/Samo.AppDir
+          mkdir -p "$app/usr/lib/samo"
+          cp -a "$bundle/." "$app/usr/lib/samo/"
+          rm "$app/usr/lib/samo/install.sh"
+          cp packaging/linux/samo.desktop "$app/samo.desktop"
+          cp packaging/icons/samo-256.png "$app/samo.png"
+          cp packaging/icons/samo-256.png "$app/.DirIcon"
+          printf '#!/bin/sh\nhere="$(dirname "$(readlink -f "$0")")"\nexec "$here/usr/lib/samo/samo" "$@"\n' > "$app/AppRun"
+          chmod +x "$app/AppRun"
+          curl -fsSL -o appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool
+          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool "$app" "dist/Samo-$version-x86_64.AppImage"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: samo-linux
+          path: |
+            dist/*.tar.gz
+            dist/*.AppImage
+
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Install build tools
+        run: choco install ninja innosetup -y --no-progress
+      - name: Set CEF path
+        shell: pwsh
+        run: Add-Content $env:GITHUB_ENV "CEF_PATH=$env:USERPROFILE\cef"
+      - uses: actions/cache@v4
+        with:
+          path: ~/cef
+          key: cef-${{ env.CEF_VERSION }}-windows-x86_64
+      - uses: Swatinem/rust-cache@v2
+      - name: Build and package
+        shell: pwsh
+        run: ./scripts/package-windows.ps1 -Version "$env:GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: samo-windows
+          path: |
+            dist/*.exe
+            dist/*.zip
+
+  release:
+    needs: [linux, windows]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Samo ${{ github.ref_name }}
+          body_path: packaging/RELEASE_NOTES.md
+          files: artifacts/*
