@@ -7,6 +7,8 @@ name = "samo"
 version = "0.1.0"
 edition = "2024"
 description = "Samo — a smooth, deeply customizable Chromium browser"
+license = "MIT"
+repository = "https://github.com/Sileyesi/samo"
 
 [dependencies]
 cef = { version = "=154.5.0", default-features = false, features = ["build-util", "resources"] }
