@@ -8,7 +8,7 @@ UX spec with numbers: `docs/ANALYSIS.md` (sections referenced as §N).
 - Crate: `cef = "=154.5.0"` (matches CEF 154.0.34). Docs: the crate source is in
   `~/.cargo/registry/src/index.crates.io-*/cef-154.5.0+154.0.34/` (generated bindings in
   `src/bindings/x86_64_unknown_linux_gnu.rs` — grep there for method names/signatures).
-  Reference examples (READ ONLY, do not build): `/tmp/claude-1000/-/8ac99ea9-733e-453c-a04a-788fa69624c2/scratchpad/cef-rs/examples/`.
+  Reference examples: `examples/` in https://github.com/tauri-apps/cef-rs (tag cef-dll-sys-v154.5.0+154.0.34).
 - Build env: `export PATH=$HOME/Projects/samo/.tools/bin:$PATH CEF_PATH=$HOME/.local/share/cef`
   (cmake+ninja live in `.tools`). CEF runtime files: `$CEF_PATH/154.0.34/cef_linux_x86_64/`.
   Run via `scripts/run.sh` (symlinks CEF runtime into target dir, sets LD_LIBRARY_PATH).
