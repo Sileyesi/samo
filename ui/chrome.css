@@ -1,0 +1,674 @@
+/* =============================================================================
+   Samo chrome — tab strip, toolbar, URL bar, find bar.
+   Public selectors for user.css (ARCHITECTURE §8): .samo-tabstrip, .samo-tab
+   ([active] [pinned] [loading] [audible] [muted] [crashed] [dragging] [closing]
+   [data-size=narrow|tiny] [data-icon-state]), .samo-toolbar, .samo-urlbar,
+   .samo-btn, .samo-findbar, :root[data-compact] [data-compact-shown].
+   Geometry/motion come from tokens.css; layout x/width of tabs is set by JS.
+   ========================================================================== */
+
+@property --samo-fade-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --samo-fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+
+:root {
+  /* Movement multiplier: 0 under reduced motion (fades keep running). */
+  --c-k: var(--samo-anim-speed, 1);
+  --c-km: var(--c-k);
+  --c-tint: var(--samo-page-tint, 0);
+  --c-strip-bg: color-mix(in oklch, var(--samo-bg-tabstrip), var(--samo-page-tint-color, var(--samo-bg-tabstrip)) calc(var(--c-tint) * 100%));
+  --c-toolbar-bg: color-mix(in oklch, var(--samo-bg-toolbar), var(--samo-page-tint-color, var(--samo-bg-toolbar)) calc(var(--c-tint) * 100%));
+  --c-tab-active-bg: color-mix(in oklch, var(--samo-tab-bg-active), var(--samo-page-tint-color, var(--samo-tab-bg-active)) calc(var(--c-tint) * 55%));
+  --c-findbar-h: 40px;
+  --c-accent-t: calc(300ms * var(--c-k));
+}
+:root[data-density="compact"] { --c-findbar-h: 36px; }
+:root[data-reduce-motion="true"] { --c-km: 0; }
+@media (prefers-reduced-motion: reduce) { :root { --c-km: 0; } }
+
+/* Contrast guard set by accent.js when a page tint would make the theme text unreadable. */
+:root[data-page-fg="dark"] .samo-chrome {
+  --samo-fg: #16161a; --samo-fg-muted: #45454e; --samo-fg-subtle: #5d5d66;
+  --samo-tab-fg: rgb(22 22 26 / 0.72); --samo-tab-fg-active: #16161a; --samo-urlbar-fg: #16161a;
+  --samo-surface-hover: rgb(0 0 0 / 0.07); --samo-tab-bg-hover: rgb(0 0 0 / 0.07); --samo-border: rgb(0 0 0 / 0.1);
+}
+:root[data-page-fg="light"] .samo-chrome {
+  --samo-fg: #f4f4f6; --samo-fg-muted: #c4c4cc; --samo-fg-subtle: #a6a6ae;
+  --samo-tab-fg: rgb(244 244 246 / 0.74); --samo-tab-fg-active: #f4f4f6; --samo-urlbar-fg: #f4f4f6;
+  --samo-surface-hover: rgb(255 255 255 / 0.08); --samo-tab-bg-hover: rgb(255 255 255 / 0.08); --samo-border: rgb(255 255 255 / 0.1);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body {
+  background: var(--c-strip-bg);
+  color: var(--samo-fg);
+  transition: background-color var(--c-accent-t) ease-in-out;
+}
+
+/* ---- Frame ------------------------------------------------------------------- */
+.samo-chrome {
+  position: fixed;
+  inset: 0 0 auto 0;
+  display: flex;
+  flex-direction: column;
+  contain: layout style;
+}
+
+/* Compact mode: chrome floats over the page and slides in from the top (§3.7). */
+:root[data-compact="true"] .samo-chrome {
+  translate: 0 -100%;
+  transition: translate calc(150ms * var(--c-km)) var(--samo-ease-in-out, ease-in-out),
+              opacity calc(100ms * var(--c-k)) ease-in-out;
+  will-change: translate;
+}
+:root[data-compact="true"][data-compact-shown="true"] .samo-chrome {
+  translate: 0 0;
+  transition: translate calc(250ms * var(--c-km)) var(--samo-ease-spring-soft, var(--samo-ease-emphasized)),
+              opacity calc(100ms * var(--c-k)) ease-in-out;
+}
+:root[data-compact="true"][data-reduce-motion="true"]:not([data-compact-shown="true"]) .samo-chrome { opacity: 0; }
+/* Hot strip affordance (only the top 4px are visible while hidden). */
+:root[data-compact="true"]:not([data-compact-shown="true"]) body::before {
+  content: "";
+  position: fixed;
+  top: 1px; left: 50%;
+  width: 44px; height: 2px;
+  translate: -50% 0;
+  border-radius: 2px;
+  background: var(--samo-border-strong);
+}
+
+/* ---- Tab strip ------------------------------------------------------------------ */
+.samo-tabstrip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: var(--samo-tabstrip-height);
+  padding-inline: var(--samo-tabstrip-padding) calc(var(--samo-tabstrip-padding) + 2px);
+  background: var(--c-strip-bg);
+  -webkit-app-region: drag;
+  transition: background-color var(--c-accent-t) ease-in-out;
+}
+
+.samo-tabs-pinned,
+.samo-tabs-scroll {
+  position: relative;
+  flex: none;
+  align-self: stretch;
+  width: 0;
+}
+.samo-tabs-scroll {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding-inline: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--samo-fade-l), #000 calc(100% - var(--samo-fade-r)), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--samo-fade-l), #000 calc(100% - var(--samo-fade-r)), transparent);
+  transition: --samo-fade-l calc(150ms * var(--c-k)) ease-out, --samo-fade-r calc(150ms * var(--c-k)) ease-out;
+}
+.samo-tabs-scroll::-webkit-scrollbar { display: none; }
+.samo-tabs-scroll[data-fade-l] { --samo-fade-l: 24px; }
+.samo-tabs-scroll[data-fade-r] { --samo-fade-r: 24px; }
+.samo-tabs-track {
+  position: relative;
+  height: 100%;
+  width: 0;
+}
+
+/* ---- Tab ------------------------------------------------------------------------ */
+.samo-tab {
+  position: absolute;
+  top: calc((var(--samo-tabstrip-height) - var(--samo-tab-height)) / 2);
+  left: 0;
+  width: 0;
+  height: var(--samo-tab-height);
+  border-radius: var(--samo-tab-radius);
+  color: var(--samo-tab-fg);
+  font-size: var(--samo-font-size-tab);
+  line-height: 1;
+  letter-spacing: 0.005em;
+  -webkit-app-region: no-drag;
+  contain: layout style;
+  will-change: translate;
+  transition-property: color;
+  outline-offset: -2px;
+}
+.samo-tab:focus-visible { outline: 2px solid var(--samo-focus-ring); border-radius: var(--samo-tab-radius); }
+
+.samo-tab-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--samo-tab-bg);
+  transition:
+    background-color var(--samo-dur-micro) ease-out,
+    box-shadow var(--samo-dur-fast) ease-out,
+    opacity calc(120ms * var(--c-k)) ease-out,
+    scale var(--samo-dur-fast) var(--samo-ease-standard);
+}
+.samo-tab:hover .samo-tab-bg { background: var(--samo-tab-bg-hover); }
+.samo-tab[active] { color: var(--samo-tab-fg-active); z-index: 1; }
+:root:not([data-indicator="underline"]) .samo-tab[active] .samo-tab-bg {
+  background: var(--c-tab-active-bg);
+  box-shadow: var(--samo-tab-shadow-active);
+  transition:
+    background-color var(--c-accent-t) ease-in-out,
+    box-shadow var(--samo-dur-fast) ease-out,
+    opacity calc(120ms * var(--c-k)) ease-out,
+    scale var(--samo-dur-fast) var(--samo-ease-standard);
+}
+:root[data-indicator="underline"] .samo-tab[active] .samo-tab-bg { background: var(--samo-tab-bg-hover); }
+:root[data-indicator="underline"] .samo-tabs-pinned .samo-tab[active]::after {
+  content: "";
+  position: absolute;
+  left: 8px; right: 8px; bottom: 1px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--samo-tab-indicator, var(--samo-accent));
+}
+
+/* Press feedback (Zen: scale .98) — not while pressing the inner buttons. */
+.samo-tab:active:not([dragging]):not(:has(.samo-btn:active)) > * { scale: var(--samo-tab-press-scale); }
+
+/* Drag lift. */
+.samo-tab[dragging] { z-index: 5; color: var(--samo-tab-fg-active); }
+.samo-tab[dragging] > * { scale: 1.02; }
+.samo-tab[dragging] .samo-tab-bg {
+  background: var(--c-tab-active-bg);
+  box-shadow: var(--samo-shadow-md), var(--samo-tab-shadow-active);
+}
+
+.samo-tab-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding-inline: var(--samo-tab-padding-inline) 6px;
+  transition:
+    opacity var(--samo-dur-fade) ease-out,
+    translate calc(120ms * var(--c-km)) var(--samo-ease-standard),
+    scale var(--samo-dur-fast) var(--samo-ease-standard);
+}
+.samo-tab-opening .samo-tab-content { opacity: 0; translate: 0 4px; transition: none; }
+.samo-tab[closing] { pointer-events: none; z-index: 0; }
+.samo-tab[closing] .samo-tab-content { opacity: 0; transition: opacity calc(90ms * var(--c-k)) var(--samo-ease-exit); }
+.samo-tab[closing] .samo-tab-bg { opacity: 0; box-shadow: none; }
+
+/* Favicon slot: favicon / fallback / spinner crossfade (150ms). */
+.samo-tab-icon {
+  position: relative;
+  flex: none;
+  width: var(--samo-tab-favicon-size);
+  height: var(--samo-tab-favicon-size);
+}
+.samo-tab-icon > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity calc(150ms * var(--c-k)) ease-out;
+}
+.samo-tab-favicon { border-radius: 3px; object-fit: contain; }
+.samo-tab-fallback { display: grid; place-items: center; color: var(--samo-fg-muted); }
+.samo-tab-fallback > svg { width: 16px; height: 16px; }
+.samo-tab[active] .samo-tab-fallback { color: var(--samo-fg); }
+.samo-tab[data-icon-state="favicon"] .samo-tab-favicon[data-ok],
+.samo-tab[data-icon-state="fallback"] .samo-tab-fallback,
+.samo-tab[data-icon-state="crashed"] .samo-tab-fallback,
+.samo-tab[data-icon-state="loading"] .samo-tab-spinner,
+.samo-tab[data-icon-state="waiting"] .samo-tab-spinner { opacity: 1; }
+.samo-tab[crashed] .samo-tab-fallback { color: var(--samo-danger); }
+.samo-tab[crashed] .samo-tab-title { color: var(--samo-fg-muted); }
+
+.samo-tab-spinner {
+  fill: none;
+  stroke: var(--samo-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 29.45 39.27; /* 270° of r=6.25 */
+  transform-origin: 50% 50%;
+  animation: samo-tab-spin 800ms linear infinite;
+}
+.samo-tab[data-icon-state="waiting"] .samo-tab-spinner {
+  stroke: var(--samo-fg-muted);
+  animation-duration: 1.2s;
+  animation-direction: reverse;
+}
+.samo-tab:not([loading]) .samo-tab-spinner,
+:root[data-hide-throbber="true"] .samo-tab-spinner { animation: none; }
+@keyframes samo-tab-spin { to { rotate: 360deg; } }
+
+.samo-tab-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-block: 2px;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--samo-tab-title-fade, 16px)), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--samo-tab-title-fade, 16px)), transparent);
+}
+
+/* Inner buttons (audio, close). */
+.samo-tab .samo-btn {
+  width: var(--samo-tab-close-size, 20px);
+  height: var(--samo-tab-close-size, 20px);
+  margin-inline-start: -4px;
+  border-radius: var(--samo-radius-sm);
+  color: inherit;
+}
+.samo-tab .samo-btn > svg { width: 14px; height: 14px; }
+.samo-tab .samo-btn:hover { --_bg: var(--samo-tab-close-bg-hover); color: var(--samo-tab-fg-active); }
+.samo-tab-close {
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity calc(100ms * var(--c-k)) ease-out,
+    background-color var(--samo-dur-micro) ease-out,
+    scale var(--samo-dur-fast) var(--samo-ease-standard);
+}
+:root[data-close-button="always"] .samo-tab-close,
+:root[data-close-button="hover"] .samo-tab:is(:hover, [active]) .samo-tab-close,
+:root[data-close-button="active"] .samo-tab[active] .samo-tab-close,
+:root:not([data-close-button]) .samo-tab:is(:hover, [active]) .samo-tab-close {
+  opacity: 1;
+  pointer-events: auto;
+}
+.samo-tab:not([active]):is([data-size="narrow"], [data-size="tiny"]) .samo-tab-close,
+.samo-tab[pinned] .samo-tab-close { display: none; }
+.samo-tab-audio { color: var(--samo-fg-muted); }
+.samo-tab[muted] .samo-tab-audio { color: var(--samo-fg-subtle); }
+
+/* Narrow tabs: centered icon only; the audio button replaces the favicon. */
+.samo-tab[data-size="tiny"] .samo-tab-title { display: none; }
+.samo-tab[data-size="tiny"] .samo-tab-content,
+.samo-tab[pinned] .samo-tab-content { justify-content: center; padding-inline: 0; }
+.samo-tab[data-size="tiny"]:is([audible], [muted]) .samo-tab-icon { display: none; }
+.samo-tab[data-size="tiny"] .samo-btn { margin: 0; }
+
+/* Pinned: icon only; audio becomes a small corner badge. */
+.samo-tab[pinned] .samo-tab-title { display: none; }
+.samo-tab[pinned] .samo-tab-audio {
+  position: absolute;
+  top: 1px; right: 1px;
+  width: 16px; height: 16px;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--c-strip-bg);
+  box-shadow: 0 0 0 1px var(--samo-border);
+}
+.samo-tab[pinned] .samo-tab-audio > svg { width: 10px; height: 10px; }
+
+/* Pinned group: faint fill + a hairline divider before the regular tabs. */
+.samo-tabs-pinned .samo-tab:not([active]):not(:hover) .samo-tab-bg { background: color-mix(in srgb, var(--samo-fg) 4%, transparent); }
+.samo-tabs-pinned:has(.samo-tab:not([closing]))::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  width: 1px;
+  height: 18px;
+  translate: 0 -50%;
+  background: var(--samo-border-strong);
+}
+
+/* Sliding underline indicator (data-indicator=underline), positioned by JS. */
+.samo-tab-indicator {
+  position: absolute;
+  left: 0;
+  top: calc(50% + var(--samo-tab-height) / 2 - 3px);
+  width: 100px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--samo-tab-indicator, var(--samo-accent));
+  transform-origin: 0 50%;
+  scale: 0 1;
+  opacity: 0;
+  z-index: 4;
+  pointer-events: none;
+  transition: opacity var(--samo-dur-fade) ease-out;
+}
+.samo-tab-indicator[visible] { opacity: 1; }
+
+/* New tab "+" and the free drag area. */
+.samo-newtab-btn {
+  margin-inline-start: 2px;
+  width: var(--samo-tab-height);
+  height: var(--samo-tab-height);
+  border-radius: var(--samo-tab-radius);
+}
+.samo-drag-space { flex: 1 1 24px; min-width: 24px; align-self: stretch; }
+
+/* Window controls (CSD). */
+.samo-wc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  -webkit-app-region: no-drag;
+}
+.samo-wc-left { margin-inline-end: 8px; }
+.samo-wc-right { margin-inline-start: 4px; }
+.samo-wc-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--samo-radius-full);
+  color: var(--samo-fg-muted);
+  --_bg: color-mix(in srgb, var(--samo-fg) 5%, transparent);
+}
+.samo-wc-btn > svg { width: 14px; height: 14px; }
+.samo-wc-btn:hover { --_bg: color-mix(in srgb, var(--samo-fg) 12%, transparent); }
+.samo-wc-close:hover { --_bg: var(--samo-danger); color: #fff; }
+.samo-wc-close:active { --_bg: color-mix(in srgb, var(--samo-danger), black 12%); }
+
+/* ---- Toolbar ---------------------------------------------------------------------- */
+.samo-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  height: var(--samo-toolbar-height);
+  padding-inline: 6px;
+  background: var(--c-toolbar-bg);
+  box-shadow: inset 0 1px 0 var(--samo-border), inset 0 -1px 0 var(--samo-border);
+  transition: background-color var(--c-accent-t) ease-in-out;
+}
+.samo-toolbar > .samo-btn > svg,
+.samo-toolbar-end .samo-btn > svg { width: 17px; height: 17px; }
+
+.samo-reload-btn { position: relative; }
+.samo-morph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transition:
+    opacity var(--samo-dur-fast) ease-out,
+    rotate calc(240ms * var(--c-km)) var(--samo-ease-emphasized),
+    scale calc(240ms * var(--c-km)) var(--samo-ease-emphasized);
+}
+.samo-morph > svg { width: 17px; height: 17px; }
+.samo-morph-stop { opacity: 0; rotate: -90deg; scale: 0.6; }
+.samo-reload-btn[data-loading] .samo-morph-reload { opacity: 0; rotate: 90deg; scale: 0.6; }
+.samo-reload-btn[data-loading] .samo-morph-stop { opacity: 1; rotate: 0deg; scale: 1; }
+
+/* ---- URL bar ------------------------------------------------------------------------ */
+.samo-urlbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex: 1 1 auto;
+  min-width: 140px;
+  height: var(--samo-urlbar-height);
+  margin-inline: 6px;
+  padding-inline: 3px 4px;
+  border-radius: var(--samo-urlbar-radius);
+  background: var(--samo-urlbar-bg);
+  color: var(--samo-urlbar-fg);
+  -webkit-app-region: no-drag;
+  transition:
+    background-color var(--samo-dur-micro) ease-out,
+    box-shadow var(--samo-dur-fast) ease-out,
+    border-radius var(--samo-dur-micro) ease-out;
+}
+.samo-urlbar:hover:not([data-focused]) { background: color-mix(in srgb, var(--samo-urlbar-bg), var(--samo-fg) 4%); }
+.samo-urlbar[data-focused] {
+  background: var(--samo-urlbar-bg-focus);
+  box-shadow: 0 0 0 1px var(--samo-focus-ring), var(--samo-shadow-sm);
+}
+/* Attached to the suggestion popup below: square bottom edge, neutral ring. */
+.samo-urlbar[data-focused][data-open] {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  box-shadow: 0 0 0 1px var(--samo-border-strong);
+  transition: none;
+}
+
+.samo-urlbar-security {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  color: var(--samo-fg-muted);
+  transition: color var(--samo-dur-micro) ease-out, background-color var(--samo-dur-micro) ease-out;
+}
+.samo-urlbar-security:hover { background: var(--samo-surface-hover); }
+.samo-urlbar-security > svg { width: 15px; height: 15px; }
+.samo-urlbar-security[data-secure="http"] { color: var(--samo-warning); }
+.samo-urlbar-security[data-secure="internal"] { color: var(--samo-accent-text, var(--samo-accent)); }
+.samo-urlbar-security[data-pending]::after {
+  content: "";
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--samo-accent);
+  box-shadow: 0 0 0 2px var(--samo-urlbar-bg-focus);
+  animation: samo-pulse 1.6s ease-in-out infinite;
+}
+@keyframes samo-pulse { 50% { scale: 0.7; opacity: 0.6; } }
+
+.samo-urlbar-field {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+}
+.samo-urlbar-input,
+.samo-urlbar-display {
+  position: absolute;
+  inset: 0;
+  padding-inline: 5px 8px;
+  font-size: 13.5px;
+  letter-spacing: 0.002em;
+}
+.samo-urlbar-input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--samo-urlbar-fg);
+  caret-color: var(--samo-accent);
+  user-select: text;
+  -webkit-user-select: text;
+}
+.samo-urlbar-input::placeholder { color: var(--samo-fg-subtle); opacity: 1; }
+.samo-urlbar-input:focus-visible { outline: none; }
+.samo-urlbar-display {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: pre;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+}
+.samo-urlbar:not([data-focused]):not([data-editing]):not([data-empty]) .samo-urlbar-input { color: transparent; }
+.samo-urlbar:is([data-focused], [data-editing], [data-empty]) .samo-urlbar-display { visibility: hidden; }
+.samo-url-host { color: var(--samo-urlbar-fg); }
+.samo-url-sub { color: var(--samo-fg-muted); }
+.samo-url-dim { color: var(--samo-fg-subtle); }
+
+.samo-urlbar-action { width: 28px; height: 28px; border-radius: 7px; }
+.samo-urlbar-action > span { display: grid; place-items: center; }
+.samo-urlbar-action svg { width: 15px; height: 15px; }
+.samo-urlbar-star { position: relative; }
+.samo-urlbar-star > span { position: absolute; inset: 0; transition: opacity var(--samo-dur-fast) ease-out; }
+.samo-star-on { opacity: 0; color: var(--samo-accent); }
+.samo-urlbar-star[data-on] .samo-star-on { opacity: 1; }
+.samo-urlbar-star[data-on] .samo-star-off { opacity: 0; }
+.samo-urlbar-star:not([data-on]):not(:hover) { color: var(--samo-fg-subtle); }
+.samo-urlbar:not(:hover):not([data-focused]) .samo-urlbar-star:not([data-on]) { opacity: 0; }
+.samo-pop { animation: samo-pop calc(260ms * var(--c-km)) var(--samo-ease-back); }
+@keyframes samo-pop { 40% { scale: 1.28; } }
+
+.samo-urlbar-chip {
+  width: auto;
+  height: 22px;
+  margin-inline: 2px;
+  padding-inline: 7px;
+  border-radius: 6px;
+  --_bg: var(--samo-accent-soft);
+  color: var(--samo-accent-text, var(--samo-accent));
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.samo-urlbar-chip:hover { --_bg: color-mix(in srgb, var(--samo-accent) 26%, transparent); color: var(--samo-accent-text, var(--samo-accent)); }
+
+/* Load progress: a hairline along the bottom of the URL bar. */
+.samo-progress {
+  position: absolute;
+  left: 12px; right: 12px; bottom: 0;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity calc(240ms * var(--c-k)) ease-out calc(180ms * var(--c-k));
+}
+.samo-progress[active] { opacity: 1; transition-delay: 0s; }
+.samo-progress-bar {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, var(--samo-page-accent, var(--samo-accent)) 40%);
+  transform-origin: 0 50%;
+  scale: 0 1;
+  transition: scale calc(400ms * var(--c-km)) var(--samo-ease-standard);
+}
+.samo-urlbar[data-focused] .samo-progress { opacity: 0; }
+
+/* ---- Toolbar end: toasts, downloads, menu ----------------------------------------------- */
+.samo-toolbar-end {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+}
+.samo-toast-host {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  pointer-events: none;
+  z-index: 10;
+}
+.samo-toast {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding-inline: 9px 12px;
+  border-radius: var(--samo-radius-full);
+  background: var(--samo-fg);
+  color: var(--samo-bg-toolbar);
+  font-size: 12.5px;
+  font-weight: 550;
+  white-space: nowrap;
+  box-shadow: var(--samo-shadow-md);
+  transform-origin: 100% 50%;
+}
+.samo-toast-icon { display: grid; place-items: center; opacity: 0.8; }
+.samo-toast-icon > svg { width: 14px; height: 14px; }
+.samo-toast[data-kind="error"] { background: var(--samo-danger); color: #fff; }
+
+.samo-downloads-btn { position: relative; }
+.samo-downloads-btn > span { display: grid; place-items: center; }
+.samo-downloads-btn > span > svg { width: 16px; height: 16px; }
+.samo-toolbar-end .samo-downloads-btn > .samo-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  rotate: -90deg;
+  fill: none;
+  stroke-width: 2;
+  opacity: 0;
+  transition: opacity var(--samo-dur-fade) ease-out;
+  pointer-events: none;
+}
+.samo-ring-track { stroke: var(--samo-border-strong); }
+.samo-ring-value {
+  stroke: var(--samo-accent);
+  stroke-linecap: round;
+  stroke-dasharray: 81.68;
+  stroke-dashoffset: 81.68;
+  transition: stroke-dashoffset calc(300ms * var(--c-km)) var(--samo-ease-standard);
+}
+.samo-downloads-btn:is([data-state="progress"], [data-state="indeterminate"]) .samo-ring { opacity: 1; }
+.samo-downloads-btn:is([data-state="progress"], [data-state="indeterminate"]) > span { scale: 0.78; color: var(--samo-accent); }
+.samo-downloads-btn > span { transition: scale var(--samo-dur-fast) var(--samo-ease-standard); }
+.samo-downloads-btn[data-state="indeterminate"] .samo-ring { animation: samo-tab-spin 1.1s linear infinite; }
+
+/* ---- Find bar -------------------------------------------------------------------------- */
+.samo-findbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  height: var(--c-findbar-h);
+  padding-inline: 8px;
+  background: var(--c-toolbar-bg);
+  box-shadow: inset 0 -1px 0 var(--samo-border);
+  transition: background-color var(--c-accent-t) ease-in-out;
+}
+.samo-findbar-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(440px, 55%);
+  height: calc(var(--c-findbar-h) - 10px);
+  margin-inline-end: 6px;
+  padding-inline: 9px 8px;
+  border-radius: var(--samo-radius-md);
+  background: var(--samo-urlbar-bg);
+  transition: box-shadow var(--samo-dur-fast) ease-out, background-color var(--samo-dur-micro) ease-out;
+}
+.samo-findbar-field:focus-within { background: var(--samo-urlbar-bg-focus); box-shadow: 0 0 0 1px var(--samo-focus-ring); }
+.samo-findbar[data-nomatch] .samo-findbar-field { box-shadow: 0 0 0 1px var(--samo-danger); background: var(--samo-danger-soft); }
+.samo-findbar-icon { display: grid; place-items: center; color: var(--samo-fg-subtle); }
+.samo-findbar-icon > svg { width: 14px; height: 14px; }
+.samo-findbar-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.samo-findbar-input::placeholder { color: var(--samo-fg-subtle); }
+.samo-findbar-count {
+  flex: none;
+  color: var(--samo-fg-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.samo-findbar .samo-btn { width: 28px; height: 28px; }
+.samo-find-case { font-size: 12px; font-weight: 650; letter-spacing: -0.02em; }
+.samo-findbar [data-flip] > svg { rotate: 180deg; }
+.samo-findbar-sep { width: 1px; height: 16px; margin-inline: 4px; background: var(--samo-border-strong); }
+.samo-findbar #find-close { margin-inline-start: auto; }
+
+/* ---- Window state --------------------------------------------------------------------- */
+:root[data-window-focused="false"] .samo-tab:not([active]),
+:root[data-window-focused="false"] .samo-wc-btn,
+:root[data-window-focused="false"] .samo-toolbar > .samo-btn { color: var(--samo-fg-subtle); }

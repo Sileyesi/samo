@@ -1,0 +1,57 @@
+/* @name Sakura  @scheme light */
+/* Cherry-blossom light theme: warm cream paper, blush surfaces, deep pink accent. */
+:root {
+  --samo-color-scheme: light;
+
+  --samo-bg-window: #f4e8e4;
+  --samo-bg-tabstrip: #f4e8e4;
+  --samo-bg-toolbar: #fbf4f1;
+  --samo-bg-popup: #fffbf9;
+  --samo-bg-palette: #fffbf9;
+  --samo-backdrop-dim: rgb(58 37 48 / 0.16);
+  --samo-bg-page: #fdf8f5;
+  --samo-surface-1: #fffdfb;
+  --samo-surface-2: #f8eee9;
+  --samo-surface-3: #f0e0da;
+
+  --samo-fg: #3a2430;
+  --samo-fg-muted: #775866;
+  --samo-fg-subtle: #93727f;
+  --samo-accent: #c2386b;
+  --samo-accent-2: #e8a0b4;
+  --samo-accent-fg: #ffffff;
+  --samo-accent-hover: #ab2c5b;
+
+  --samo-danger: #c62a3a;
+  --samo-success: #2f7d4f;
+  --samo-warning: #a8590d;
+  --samo-recording: #d92d4a;
+
+  --samo-tab-bg-active: #fffdfb;
+  --samo-tab-fg: color-mix(in srgb, var(--samo-fg) 74%, transparent);
+  --samo-tab-border-active: rgb(120 60 80 / 0.10);
+  --samo-tab-shadow-active: 0 1px 2px rgb(120 60 80 / 0.10), 0 0 0 1px var(--samo-tab-border-active);
+  --samo-urlbar-bg: rgb(120 60 80 / 0.06);
+  --samo-urlbar-bg-focus: #fffdfb;
+  --samo-border: rgb(120 60 80 / 0.11);
+  --samo-border-strong: rgb(120 60 80 / 0.20);
+  --samo-selection-bg: rgb(232 160 180 / 0.45);
+
+  --samo-group-grey: #7d6b73;
+  --samo-group-blue: #3b6fc4;
+  --samo-group-red: #c62a3a;
+  --samo-group-yellow: #b7860b;
+  --samo-group-green: #3d8a5a;
+  --samo-group-pink: #c2386b;
+  --samo-group-purple: #8b4bb8;
+  --samo-group-cyan: #1f8a99;
+  --samo-group-orange: #d0602a;
+
+  --samo-shadow-sm: 0 1px 2px rgb(120 60 80 / 0.08);
+  --samo-shadow-md: 0 4px 14px rgb(120 60 80 / 0.10), 0 1px 3px rgb(120 60 80 / 0.06);
+  --samo-shadow-lg: 0 18px 44px rgb(120 60 80 / 0.16), 0 3px 8px rgb(120 60 80 / 0.06);
+  --samo-bg-gradient:
+    radial-gradient(1000px 620px at 12% -15%, rgb(240 170 190 / 0.35), transparent 62%),
+    radial-gradient(900px 560px at 108% 112%, rgb(250 210 170 / 0.32), transparent 60%);
+  --samo-grain-opacity: 0.03;
+}

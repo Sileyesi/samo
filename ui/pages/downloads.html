@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Downloads</title>
+<link rel="stylesheet" href="samo://ui/shared/tokens.css">
+<link rel="stylesheet" href="samo://ui/shared/base.css">
+<link id="samo-theme" rel="stylesheet" href="samo://theme/current.css">
+<link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="lists.css">
+<link id="samo-user" rel="stylesheet" href="samo://theme/user.css">
+<script>/* dev preview outside Samo only — inert on samo:// */ if (location.protocol !== "samo:") document.write('<script src="dev-mock.js"><\/script>');</script>
+<script type="module" src="downloads.js"></script>
+</head>
+<body class="samo-page samo-downloads">
+  <div class="page-shell">
+    <header class="page-header">
+      <h1 class="page-title"><span class="page-title__icon" id="title-icon"></span><span data-i18n="dl.title"></span><span class="badge badge--accent" id="active" hidden></span></h1>
+      <span class="page-header__spacer"></span>
+      <label class="page-search">
+        <span class="page-search__icon" id="search-icon" aria-hidden="true"></span>
+        <input id="q" class="samo-input" type="search" spellcheck="false" autocomplete="off" data-i18n-placeholder="dl.search" data-i18n-aria="dl.search">
+        <kbd class="samo-kbd">/</kbd>
+      </label>
+    </header>
+    <main id="list" class="dl-list" aria-live="polite"></main>
+  </div>
+</body>
+</html>

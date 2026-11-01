@@ -1,0 +1,49 @@
+/* @name Frost  @scheme dark */
+/* Cool arctic slate with glacier-blue accents (Nord-inspired). */
+:root {
+  --samo-color-scheme: dark;
+
+  --samo-bg-window: #2a2f3a;
+  --samo-bg-tabstrip: #2a2f3a;
+  --samo-bg-toolbar: #303643;
+  --samo-bg-popup: #343a48;
+  --samo-bg-palette: #343a48;
+  --samo-backdrop-dim: rgb(20 24 32 / 0.40);
+  --samo-bg-page: #282d37;
+  --samo-surface-1: #2e3440;
+  --samo-surface-2: #3a414f;
+  --samo-surface-3: #444c5c;
+
+  --samo-fg: #eceff4;
+  --samo-fg-muted: #b8c0cf;
+  --samo-fg-subtle: #909aad;
+  --samo-accent: #88c0d0;
+  --samo-accent-2: #5e81ac;
+  --samo-accent-fg: #1c2530;
+
+  --samo-danger: #e3858d;
+  --samo-success: #a3be8c;
+  --samo-warning: #ebcb8b;
+  --samo-recording: #d8606b;
+
+  --samo-tab-bg-active: #3b4252;
+  --samo-tab-shadow-active: 0 1px 2px rgb(12 16 24 / 0.30), 0 0 0 1px var(--samo-tab-border-active);
+
+  --samo-group-grey: #a0a9b9;
+  --samo-group-blue: #81a1c1;
+  --samo-group-red: #d57780;
+  --samo-group-yellow: #ebcb8b;
+  --samo-group-green: #a3be8c;
+  --samo-group-pink: #d99bbd;
+  --samo-group-purple: #b48ead;
+  --samo-group-cyan: #8fbcbb;
+  --samo-group-orange: #d08770;
+
+  --samo-shadow-sm: 0 1px 2px rgb(12 16 24 / 0.28);
+  --samo-shadow-md: 0 4px 14px rgb(12 16 24 / 0.30), 0 1px 3px rgb(12 16 24 / 0.20);
+  --samo-shadow-lg: 0 18px 44px rgb(12 16 24 / 0.42), 0 3px 8px rgb(12 16 24 / 0.24);
+  --samo-bg-gradient:
+    radial-gradient(1100px 620px at 10% -15%, rgb(136 192 208 / 0.12), transparent 62%),
+    radial-gradient(900px 560px at 110% 115%, rgb(94 129 172 / 0.16), transparent 60%);
+  --samo-grain-opacity: 0;
+}

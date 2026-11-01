@@ -1,0 +1,260 @@
+/* =============================================================================
+   Samo design tokens — the PUBLIC THEMING API.
+   -----------------------------------------------------------------------------
+   Every variable here may be overridden by:
+     1. a theme   (themes/*.css or ~/.config/samo/themes/*.css — colors only)
+     2. user.css  (~/.config/samo/user.css — anything)
+   Defaults below are the "Samo Dark" look (neutral graphite, soft violet).
+   Names are stable and versioned; see docs/ANALYSIS.md §4.
+
+   Load order in every document (ARCHITECTURE §8):
+     tokens.css → base.css → samo://theme/current.css → page css → user.css
+   bridge.js writes on <html>: data-density, data-reduce-motion,
+   data-indicator, data-close-button, data-compact, data-window-controls and the
+   inline vars --samo-anim-speed, --samo-font-ui, --samo-tab-max/min-width,
+   --samo-content-inset.
+   ========================================================================== */
+
+:root {
+  /* ---- Color scheme ------------------------------------------------------
+     Themes set this to `light` or `dark`; base.css maps it to color-scheme
+     so native controls, scrollbars and form widgets match. */
+  --samo-color-scheme: dark;
+
+  /* HOW COLORS WORK
+     A theme normally sets only the BASE colors (marked "base"). Everything
+     marked "derived" is computed from them with color-mix(), so changing
+     --samo-accent or --samo-fg re-tints hovers, borders, focus rings, etc.
+     Any derived token may still be overridden explicitly. */
+
+  /* ---- Surfaces ----------------------------------------------------------
+     window       (base) outermost background, behind tab strip & page card
+     tabstrip     (base) the tab row
+     toolbar      (base) nav buttons + urlbar row
+     content-frame(base) frame around the page when content inset > 0
+     popup        (base) menus, suggestion dropdowns, tooltips — OPAQUE
+     palette      (base) floating command palette panel — OPAQUE
+     backdrop-dim (base) scrim behind the palette / dialogs
+     page         (base) body of internal pages (samo://settings …)
+     surface-1..3 (base) layered fills: cards/sidebar → inputs → pressed
+     surface-hover/active (derived) translucent hover/press overlays */
+  --samo-bg-window: #18181b;
+  --samo-bg-tabstrip: #18181b;
+  --samo-bg-toolbar: #1f1f23;
+  --samo-bg-content-frame: var(--samo-bg-window);
+  --samo-bg-popup: #232328;
+  --samo-bg-palette: #232328;
+  --samo-backdrop-dim: rgb(0 0 0 / 0.38);
+  --samo-bg-page: #141416;
+  --samo-surface-1: #1c1c20;
+  --samo-surface-2: #242429;
+  --samo-surface-3: #2d2d33;
+  --samo-surface-hover: color-mix(in srgb, var(--samo-fg) 6%, transparent);
+  --samo-surface-active: color-mix(in srgb, var(--samo-fg) 10%, transparent);
+
+  /* Decorative background for the new tab page (and optionally the window).
+     `none` disables. Defaults to two soft glows of the accent. */
+  --samo-bg-gradient:
+    radial-gradient(1100px 620px at 12% -12%, color-mix(in srgb, var(--samo-accent) 13%, transparent), transparent 62%),
+    radial-gradient(900px 520px at 108% 112%, color-mix(in srgb, var(--samo-accent-2) 10%, transparent), transparent 60%);
+
+  /* ---- Text & accent ----------------------------------------------------- */
+  --samo-fg: #ececef;                 /* base: primary text, ≥4.5:1 on surfaces */
+  --samo-fg-muted: #a1a1aa;           /* base: secondary text, ≥4.5:1 */
+  --samo-fg-subtle: #7b7b84;          /* base: hints/placeholders, ≥3:1, non-essential */
+  --samo-accent: #a78bfa;             /* base: accent (config ui.accent may replace it) */
+  --samo-accent-2: #60a5fa;           /* base: secondary hue for gradients */
+  --samo-accent-hover: color-mix(in oklch, var(--samo-accent), white 14%);
+  --samo-accent-fg: #17122b;          /* base: text ON accent fills, ≥4.5:1 */
+  --samo-accent-soft: color-mix(in srgb, var(--samo-accent) 16%, transparent);
+  --samo-accent-text: var(--samo-accent);   /* accent used as text color, ≥4.5:1 */
+  --samo-focus-ring: color-mix(in srgb, var(--samo-accent) 70%, transparent);
+  --samo-border: color-mix(in srgb, var(--samo-fg) 9%, transparent);
+  --samo-border-strong: color-mix(in srgb, var(--samo-fg) 17%, transparent);
+  --samo-danger: #f87171;
+  --samo-danger-soft: color-mix(in srgb, var(--samo-danger) 14%, transparent);
+  --samo-success: #4ade80;
+  --samo-warning: #fbbf24;
+  --samo-recording: #ef4444;
+  --samo-selection-bg: color-mix(in srgb, var(--samo-accent) 35%, transparent);
+  --samo-selection-fg: inherit;
+
+  /* ---- Tabs --------------------------------------------------------------- */
+  --samo-tab-bg: transparent;
+  --samo-tab-bg-hover: color-mix(in srgb, var(--samo-fg) 7%, transparent);
+  --samo-tab-bg-active: #2a2a30;      /* base: the raised active tab card */
+  --samo-tab-bg-selected: color-mix(in srgb, var(--samo-accent) 18%, transparent);
+  --samo-tab-fg: color-mix(in srgb, var(--samo-fg) 70%, transparent);
+  --samo-tab-fg-active: var(--samo-fg);
+  --samo-tab-border-active: color-mix(in srgb, var(--samo-fg) 7%, transparent);
+  --samo-tab-shadow-active: 0 1px 2px rgb(0 0 0 / 0.30), 0 0 0 1px var(--samo-tab-border-active);
+  --samo-tab-indicator: var(--samo-page-accent);
+  --samo-tab-close-bg-hover: color-mix(in srgb, var(--samo-fg) 12%, transparent);
+
+  /* ---- URL bar & command palette ----------------------------------------- */
+  --samo-urlbar-bg: color-mix(in srgb, var(--samo-fg) 5.5%, transparent);
+  --samo-urlbar-bg-focus: var(--samo-tab-bg-active);
+  --samo-urlbar-fg: var(--samo-fg);
+  --samo-suggestion-bg-hover: color-mix(in srgb, var(--samo-fg) 5%, transparent);
+  --samo-suggestion-bg-selected: var(--samo-accent-soft);
+  --samo-palette-blur: 32px;
+
+  /* ---- Tab group colors (Chrome's 9) --------------------------------------
+     Used for chips (20% fill) and the 2px line under the group's tabs.
+     Light themes should use darker variants. */
+  --samo-group-grey: #9ca3af;
+  --samo-group-blue: #60a5fa;
+  --samo-group-red: #f87171;
+  --samo-group-yellow: #facc15;
+  --samo-group-green: #4ade80;
+  --samo-group-pink: #f472b6;
+  --samo-group-purple: #c084fc;
+  --samo-group-cyan: #22d3ee;
+  --samo-group-orange: #fb923c;
+
+  /* ---- Dynamic (written by the browser at runtime, read-only) ------------
+     page-accent  : normalized theme-color of the active page (or accent)
+     space-color  : color of the current workspace
+     space-gradient: gradient of the current workspace */
+  --samo-page-accent: var(--samo-accent);
+  --samo-space-color: var(--samo-accent);
+  --samo-space-gradient: none;
+
+  /* ---- Geometry: normal density (ANALYSIS §3.1 / §3.2) -------------------- */
+  --samo-tabstrip-height: 40px;
+  --samo-tabstrip-padding: 6px;
+  --samo-tab-height: 32px;
+  --samo-tab-min-width: 44px;         /* inactive: favicon only */
+  --samo-tab-min-width-active: 88px;  /* active: favicon + close */
+  --samo-tab-max-width: 240px;
+  --samo-tab-pinned-width: 40px;
+  --samo-tab-gap: 4px;
+  --samo-tab-padding-inline: 10px;
+  --samo-tab-radius: 8px;
+  --samo-tab-favicon-size: 16px;
+  --samo-tab-close-size: 20px;
+  --samo-tab-title-fade: 16px;
+  --samo-toolbar-height: 44px;
+  --samo-urlbar-height: 34px;
+  --samo-urlbar-radius: 10px;
+  --samo-btn-size: 32px;
+  --samo-icon-size: 16px;
+  --samo-content-inset: 0px;          /* page "card" gap; config ui.content_inset */
+  --samo-content-radius: 8px;         /* radius of the page card when inset > 0 */
+  --samo-group-chip-height: 24px;
+
+  /* Radii scale */
+  --samo-radius-sm: 6px;              /* buttons, close glyph, chips */
+  --samo-radius-md: 8px;              /* tabs, inputs */
+  --samo-radius-lg: 12px;             /* menus, cards */
+  --samo-radius-xl: 14px;             /* palette, dialogs */
+  --samo-radius-full: 999px;
+
+  /* Spacing scale (4px grid) */
+  --samo-space-1: 4px;
+  --samo-space-2: 8px;
+  --samo-space-3: 12px;
+  --samo-space-4: 16px;
+  --samo-space-5: 20px;
+  --samo-space-6: 24px;
+  --samo-space-8: 32px;
+  --samo-space-10: 40px;
+
+  /* ---- Typography --------------------------------------------------------- */
+  --samo-font-ui: system-ui, "Inter", "Segoe UI", Roboto, sans-serif;
+  --samo-font-mono: ui-monospace, "JetBrains Mono", "Cascadia Code", "Fira Code", "DejaVu Sans Mono", monospace;
+  --samo-font-size-ui: 13px;
+  --samo-font-size-tab: 12.5px;
+  --samo-font-size-sm: 12px;
+  --samo-font-size-xs: 11px;
+  --samo-font-size-md: 14px;
+  --samo-font-size-lg: 16px;
+  --samo-font-size-xl: 20px;
+  --samo-font-size-2xl: 28px;
+  --samo-font-weight-medium: 500;
+  --samo-font-weight-semibold: 600;
+  --samo-line-height: 1.4;
+
+  /* ---- Motion (ANALYSIS §3.3) ---------------------------------------------
+     Durations scale with config ui.animation_speed (bridge writes
+     --samo-anim-speed; 0.5 = twice as fast, 2 = twice as slow).
+     Use: transition: transform var(--samo-dur-base) var(--samo-ease-standard);
+     Reduced motion collapses movement to ~0 but keeps short fades
+     (use --samo-dur-fade for pure opacity transitions). */
+  --samo-anim-speed: 1;
+  --samo-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --samo-ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --samo-ease-snap: cubic-bezier(0.07, 0.95, 0, 1);
+  --samo-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --samo-ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --samo-ease-spring: linear(0, 0.34 12%, 0.7 24%, 0.93 38%, 1.03 55%, 1);
+  /* Zen compact-mode reveal: damped spring with ~0.5% overshoot */
+  --samo-ease-spring-soft: linear(0, 0.0027 1%, 0.0106 2%, 0.0425 4%, 0.0957 6%, 0.1701 8%, 0.2655 10%,
+    0.497 20%, 0.6876 30%, 0.8216 40%, 0.9061 50%, 0.9547 60%, 0.9809 70%, 0.9938 80%, 1.0057 92%, 1.0034 100%);
+  --samo-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --samo-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --samo-dur-micro: calc(80ms * var(--samo-anim-speed, 1));    /* hover bg, close fade */
+  --samo-dur-fast: calc(120ms * var(--samo-anim-speed, 1));    /* press, small pops */
+  --samo-dur-base: calc(200ms * var(--samo-anim-speed, 1));    /* tab move, panels */
+  --samo-dur-slow: calc(300ms * var(--samo-anim-speed, 1));    /* accent change, sections */
+  --samo-dur-glance: calc(350ms * var(--samo-anim-speed, 1));  /* glance, big overlays */
+  --samo-dur-fade: calc(120ms * var(--samo-anim-speed, 1));    /* opacity-only transitions */
+  --samo-tab-press-scale: 0.98;
+  --samo-btn-press-scale: 0.96;
+
+  /* ---- Effects ------------------------------------------------------------ */
+  --samo-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.30);
+  --samo-shadow-md: 0 4px 12px rgb(0 0 0 / 0.28), 0 1px 3px rgb(0 0 0 / 0.20);
+  --samo-shadow-lg: 0 16px 40px rgb(0 0 0 / 0.40), 0 3px 8px rgb(0 0 0 / 0.24);
+  --samo-blur-popup: 24px;
+  --samo-grain-opacity: 0;            /* 0..0.1; noise overlay on window / newtab */
+  /* SVG fractal noise used for grain (no network) */
+  --samo-grain-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ---- Compact density (ANALYSIS §3.1) -------------------------------------- */
+:root[data-density="compact"] {
+  --samo-tabstrip-height: 34px;
+  --samo-tabstrip-padding: 3px;
+  --samo-tab-height: 28px;
+  --samo-tab-padding-inline: 8px;
+  --samo-tab-gap: 3px;
+  --samo-tab-pinned-width: 36px;
+  --samo-toolbar-height: 38px;
+  --samo-urlbar-height: 30px;
+  --samo-btn-size: 28px;
+  --samo-group-chip-height: 22px;
+}
+
+/* ---- Reduced motion -------------------------------------------------------
+   Movement collapses to ~0 (1ms keeps transitionend events firing);
+   fades stay but are capped at 100ms. */
+:root[data-reduce-motion="true"] {
+  --samo-dur-micro: 1ms;
+  --samo-dur-fast: 1ms;
+  --samo-dur-base: 1ms;
+  --samo-dur-slow: 1ms;
+  --samo-dur-glance: 1ms;
+  --samo-dur-fade: 100ms;
+  --samo-tab-press-scale: 1;
+  --samo-btn-press-scale: 1;
+  --samo-ease-spring: linear;
+  --samo-ease-spring-soft: linear;
+  --samo-ease-back: ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --samo-dur-micro: 1ms;
+    --samo-dur-fast: 1ms;
+    --samo-dur-base: 1ms;
+    --samo-dur-slow: 1ms;
+    --samo-dur-glance: 1ms;
+    --samo-dur-fade: 100ms;
+    --samo-tab-press-scale: 1;
+    --samo-btn-press-scale: 1;
+    --samo-ease-spring: linear;
+    --samo-ease-spring-soft: linear;
+    --samo-ease-back: ease-out;
+  }
+}

@@ -1,0 +1,51 @@
+/* @name Dusk  @scheme dark */
+/* Warm twilight: muted aubergine base, dusty rose accent, gold highlights. */
+:root {
+  --samo-color-scheme: dark;
+
+  --samo-bg-window: #1a1724;
+  --samo-bg-tabstrip: #1a1724;
+  --samo-bg-toolbar: #201d2d;
+  --samo-bg-popup: #252133;
+  --samo-bg-palette: #252133;
+  --samo-backdrop-dim: rgb(10 8 16 / 0.45);
+  --samo-bg-page: #17141f;
+  --samo-surface-1: #1e1b2a;
+  --samo-surface-2: #282436;
+  --samo-surface-3: #322d43;
+
+  --samo-fg: #e7e2f3;
+  --samo-fg-muted: #aaa4bf;
+  --samo-fg-subtle: #837c9a;
+  --samo-accent: #ebbcba;
+  --samo-accent-2: #f3c27e;
+  --samo-accent-fg: #2b1a20;
+
+  --samo-danger: #ef7d9b;
+  --samo-success: #9ccfb0;
+  --samo-warning: #f3c27e;
+  --samo-recording: #eb6f92;
+
+  --samo-tab-bg-active: #2b2639;
+  --samo-tab-border-active: rgb(235 188 186 / 0.10);
+  --samo-tab-shadow-active: 0 1px 2px rgb(0 0 0 / 0.35), 0 0 0 1px var(--samo-tab-border-active);
+
+  --samo-group-grey: #908caa;
+  --samo-group-blue: #8fb3e0;
+  --samo-group-red: #eb6f92;
+  --samo-group-yellow: #f6c177;
+  --samo-group-green: #9ccfb0;
+  --samo-group-pink: #ebbcba;
+  --samo-group-purple: #c4a7e7;
+  --samo-group-cyan: #9ccfd8;
+  --samo-group-orange: #f0a07a;
+
+  --samo-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+  --samo-shadow-md: 0 4px 14px rgb(0 0 0 / 0.35), 0 1px 3px rgb(0 0 0 / 0.22);
+  --samo-shadow-lg: 0 18px 44px rgb(0 0 0 / 0.50), 0 3px 8px rgb(0 0 0 / 0.28);
+  --samo-bg-gradient:
+    radial-gradient(1100px 640px at 8% -18%, rgb(235 188 186 / 0.13), transparent 62%),
+    radial-gradient(1000px 600px at 112% 118%, rgb(243 194 126 / 0.11), transparent 60%),
+    radial-gradient(700px 500px at 60% 120%, rgb(196 167 231 / 0.08), transparent 60%);
+  --samo-grain-opacity: 0.045;
+}

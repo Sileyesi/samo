@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Tab</title>
+<link rel="stylesheet" href="samo://ui/shared/tokens.css">
+<link rel="stylesheet" href="samo://ui/shared/base.css">
+<link id="samo-theme" rel="stylesheet" href="samo://theme/current.css">
+<link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="newtab.css">
+<link id="samo-user" rel="stylesheet" href="samo://theme/user.css">
+<script>/* dev preview outside Samo only — inert on samo:// */ if (location.protocol !== "samo:") document.write('<script src="dev-mock.js"><\/script>');</script>
+<script type="module" src="newtab.js"></script>
+</head>
+<body class="samo-page samo-newtab">
+  <div class="nt-backdrop" aria-hidden="true"></div>
+
+  <main class="nt-main">
+    <header class="nt-hero">
+      <time class="nt-clock" id="clock" aria-live="off"></time>
+      <p class="nt-greet"><span id="greet"></span><span class="nt-dot" aria-hidden="true"></span><span id="date"></span></p>
+    </header>
+
+    <form class="nt-search" id="search" role="search" autocomplete="off">
+      <span class="nt-search__icon" id="search-icon" aria-hidden="true"></span>
+      <input id="q" type="text" spellcheck="false" autocapitalize="off" enterkeyhint="go"
+             data-i18n-placeholder="newtab.search" data-i18n-aria="newtab.search" autofocus>
+      <span class="nt-search__hint" id="hint" aria-hidden="true"><span id="hint-text"></span><kbd>↵</kbd></span>
+    </form>
+
+    <section class="nt-sites" aria-labelledby="sites-title">
+      <h2 id="sites-title" class="u-sr-only" data-i18n="newtab.topSites"></h2>
+      <div class="nt-grid" id="grid" role="list"></div>
+      <p class="nt-empty" id="sites-empty" hidden data-i18n="newtab.empty"></p>
+    </section>
+  </main>
+
+  <nav class="nt-corner" aria-label="Samo">
+    <button class="samo-btn samo-btn--round" id="btn-history" data-i18n-title="newtab.history" data-i18n-aria="newtab.history"></button>
+    <button class="samo-btn samo-btn--round" id="btn-settings" data-i18n-title="newtab.settings" data-i18n-aria="newtab.settings"></button>
+  </nav>
+</body>
+</html>

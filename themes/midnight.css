@@ -1,0 +1,52 @@
+/* @name Midnight  @scheme dark */
+/* Deep blue-black night sky with a crisp cyan accent. */
+:root {
+  --samo-color-scheme: dark;
+
+  --samo-bg-window: #0b0f17;
+  --samo-bg-tabstrip: #0b0f17;
+  --samo-bg-toolbar: #10161f;
+  --samo-bg-popup: #141b27;
+  --samo-bg-palette: #141b27;
+  --samo-backdrop-dim: rgb(2 6 14 / 0.50);
+  --samo-bg-page: #090c13;
+  --samo-surface-1: #0e131d;
+  --samo-surface-2: #151c29;
+  --samo-surface-3: #1d2636;
+
+  --samo-fg: #e2e8f2;
+  --samo-fg-muted: #94a3b8;
+  --samo-fg-subtle: #68788f;
+  --samo-accent: #22d3ee;
+  --samo-accent-2: #6366f1;
+  --samo-accent-fg: #03232b;
+
+  --samo-danger: #fb7185;
+  --samo-success: #34d399;
+  --samo-warning: #fbbf24;
+  --samo-recording: #f43f5e;
+
+  --samo-tab-bg-active: #18202e;
+  --samo-tab-border-active: rgb(148 180 220 / 0.09);
+  --samo-tab-shadow-active: 0 1px 2px rgb(0 0 0 / 0.45), 0 0 0 1px var(--samo-tab-border-active);
+  --samo-border: rgb(148 180 220 / 0.09);
+  --samo-border-strong: rgb(148 180 220 / 0.18);
+
+  --samo-group-grey: #94a3b8;
+  --samo-group-blue: #60a5fa;
+  --samo-group-red: #fb7185;
+  --samo-group-yellow: #fde047;
+  --samo-group-green: #34d399;
+  --samo-group-pink: #f472b6;
+  --samo-group-purple: #a78bfa;
+  --samo-group-cyan: #22d3ee;
+  --samo-group-orange: #fb923c;
+
+  --samo-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --samo-shadow-md: 0 4px 14px rgb(0 0 0 / 0.45), 0 1px 3px rgb(0 0 0 / 0.30);
+  --samo-shadow-lg: 0 18px 44px rgb(0 0 0 / 0.60), 0 3px 8px rgb(0 0 0 / 0.35);
+  --samo-bg-gradient:
+    radial-gradient(1000px 600px at 85% -15%, rgb(34 211 238 / 0.12), transparent 60%),
+    radial-gradient(1000px 640px at -10% 115%, rgb(99 102 241 / 0.13), transparent 62%);
+  --samo-grain-opacity: 0.035;
+}

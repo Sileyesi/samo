@@ -1,0 +1,38 @@
+/* @name Samo Dark  @scheme dark */
+/* Default theme: neutral graphite with a soft violet accent.
+   Only base colors are set here; derived tokens (hovers, borders, focus ring,
+   accent-soft…) are computed from them in ui/shared/tokens.css. */
+:root {
+  --samo-color-scheme: dark;
+
+  --samo-bg-window: #18181b;
+  --samo-bg-tabstrip: #18181b;
+  --samo-bg-toolbar: #1f1f23;
+  --samo-bg-popup: #232328;
+  --samo-bg-palette: #232328;
+  --samo-backdrop-dim: rgb(0 0 0 / 0.38);
+  --samo-bg-page: #141416;
+  --samo-surface-1: #1c1c20;
+  --samo-surface-2: #242429;
+  --samo-surface-3: #2d2d33;
+
+  --samo-fg: #ececef;
+  --samo-fg-muted: #a1a1aa;
+  --samo-fg-subtle: #7b7b84;
+  --samo-accent: #a78bfa;
+  --samo-accent-2: #60a5fa;
+  --samo-accent-fg: #17122b;
+
+  --samo-danger: #f87171;
+  --samo-success: #4ade80;
+  --samo-warning: #fbbf24;
+  --samo-recording: #ef4444;
+
+  --samo-tab-bg-active: #2a2a30;
+  --samo-tab-shadow-active: 0 1px 2px rgb(0 0 0 / 0.30), 0 0 0 1px var(--samo-tab-border-active);
+
+  --samo-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.30);
+  --samo-shadow-md: 0 4px 12px rgb(0 0 0 / 0.28), 0 1px 3px rgb(0 0 0 / 0.20);
+  --samo-shadow-lg: 0 16px 40px rgb(0 0 0 / 0.40), 0 3px 8px rgb(0 0 0 / 0.24);
+  --samo-grain-opacity: 0;
+}

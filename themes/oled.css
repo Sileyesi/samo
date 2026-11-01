@@ -1,0 +1,56 @@
+/* @name OLED  @scheme dark */
+/* Pure black for OLED panels: true-black surfaces, high-contrast monochrome. */
+:root {
+  --samo-color-scheme: dark;
+
+  --samo-bg-window: #000000;
+  --samo-bg-tabstrip: #000000;
+  --samo-bg-toolbar: #000000;
+  --samo-bg-popup: #0d0d0d;
+  --samo-bg-palette: #0d0d0d;
+  --samo-backdrop-dim: rgb(0 0 0 / 0.60);
+  --samo-bg-page: #000000;
+  --samo-surface-1: #090909;
+  --samo-surface-2: #141414;
+  --samo-surface-3: #202020;
+
+  --samo-fg: #ffffff;
+  --samo-fg-muted: #b8b8b8;
+  --samo-fg-subtle: #858585;
+  --samo-accent: #f2f2f2;
+  --samo-accent-2: #6b6b6b;
+  --samo-accent-fg: #000000;
+  --samo-accent-hover: #ffffff;
+  --samo-accent-soft: rgb(255 255 255 / 0.13);
+
+  --samo-danger: #ff6b6b;
+  --samo-success: #5ef08a;
+  --samo-warning: #ffd23f;
+  --samo-recording: #ff3b3b;
+
+  --samo-tab-bg-active: #161616;
+  --samo-tab-fg: rgb(255 255 255 / 0.66);
+  --samo-tab-border-active: rgb(255 255 255 / 0.14);
+  --samo-tab-shadow-active: 0 0 0 1px var(--samo-tab-border-active);
+  --samo-border: rgb(255 255 255 / 0.13);
+  --samo-border-strong: rgb(255 255 255 / 0.26);
+  --samo-urlbar-bg: #0f0f0f;
+  --samo-urlbar-bg-focus: #161616;
+  --samo-focus-ring: rgb(255 255 255 / 0.85);
+
+  --samo-group-grey: #a3a3a3;
+  --samo-group-blue: #5fa8ff;
+  --samo-group-red: #ff6b6b;
+  --samo-group-yellow: #ffd23f;
+  --samo-group-green: #5ef08a;
+  --samo-group-pink: #ff7ac6;
+  --samo-group-purple: #c58bff;
+  --samo-group-cyan: #3ee0f5;
+  --samo-group-orange: #ff9f45;
+
+  --samo-shadow-sm: 0 0 0 1px rgb(255 255 255 / 0.06);
+  --samo-shadow-md: 0 0 0 1px rgb(255 255 255 / 0.10), 0 6px 16px rgb(0 0 0 / 0.8);
+  --samo-shadow-lg: 0 0 0 1px rgb(255 255 255 / 0.12), 0 18px 44px rgb(0 0 0 / 0.9);
+  --samo-bg-gradient: none;
+  --samo-grain-opacity: 0;
+}

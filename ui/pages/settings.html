@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings</title>
+<link rel="stylesheet" href="samo://ui/shared/tokens.css">
+<link rel="stylesheet" href="samo://ui/shared/base.css">
+<link id="samo-theme" rel="stylesheet" href="samo://theme/current.css">
+<link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="settings.css">
+<link id="samo-user" rel="stylesheet" href="samo://theme/user.css">
+<script>/* dev preview outside Samo only — inert on samo:// */ if (location.protocol !== "samo:") document.write('<script src="dev-mock.js"><\/script>');</script>
+<script type="module" src="settings.js"></script>
+</head>
+<body class="samo-page samo-settings">
+  <div class="st-layout">
+    <aside class="st-side">
+      <div class="st-brand">
+        <span class="st-brand__logo" id="brand-logo" aria-hidden="true"></span>
+        <h1 class="st-brand__title" data-i18n="settings.title"></h1>
+      </div>
+      <label class="page-search st-filter">
+        <span class="page-search__icon" id="filter-icon" aria-hidden="true"></span>
+        <input id="filter" class="samo-input" type="search" spellcheck="false" autocomplete="off"
+               data-i18n-placeholder="settings.search" data-i18n-aria="settings.search">
+        <kbd class="samo-kbd">/</kbd>
+      </label>
+      <nav class="st-nav" id="nav" aria-label="Sections">
+        <span class="st-nav__pill" id="nav-pill" aria-hidden="true"></span>
+      </nav>
+      <div class="st-side__foot" id="side-foot"></div>
+    </aside>
+    <main class="st-main" id="main" tabindex="-1">
+      <div class="st-content" id="content"></div>
+      <div class="st-noresults" id="noresults" hidden></div>
+    </main>
+  </div>
+</body>
+</html>

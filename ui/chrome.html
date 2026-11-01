@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" data-density="normal" data-indicator="card" data-close-button="hover" data-window-controls="right">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Samo</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/base.css">
+<link id="samo-theme" rel="stylesheet" href="samo://theme/current.css">
+<link rel="stylesheet" href="chrome.css">
+<link id="samo-user" rel="stylesheet" href="samo://theme/user.css">
+<script type="module" src="chrome.js"></script>
+</head>
+<body>
+<div class="samo-chrome" id="chrome">
+  <div class="samo-tabstrip" id="tabstrip">
+    <div class="samo-wc samo-wc-left" id="wc-left" hidden></div>
+    <div class="samo-tabs-pinned" id="tabs-pinned" role="tablist" aria-label="Pinned tabs"></div>
+    <div class="samo-tabs-scroll" id="tabs-scroll">
+      <div class="samo-tabs-track" id="tabs-track" role="tablist" aria-label="Tabs">
+        <div class="samo-tab-indicator" id="tab-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+    <button class="samo-btn samo-newtab-btn" id="newtab-btn" data-icon="plus" aria-label="New tab"></button>
+    <div class="samo-drag-space" id="drag-space"></div>
+    <div class="samo-wc samo-wc-right" id="wc-right"></div>
+  </div>
+
+  <div class="samo-toolbar" id="toolbar">
+    <button class="samo-btn" id="btn-back" data-icon="arrow-left" aria-label="Back" disabled></button>
+    <button class="samo-btn" id="btn-forward" data-icon="arrow-right" aria-label="Forward" disabled></button>
+    <button class="samo-btn samo-reload-btn" id="btn-reload" aria-label="Reload">
+      <span class="samo-morph samo-morph-reload" data-icon="rotate-cw"></span>
+      <span class="samo-morph samo-morph-stop" data-icon="x"></span>
+    </button>
+
+    <div class="samo-urlbar" id="urlbar">
+      <span class="samo-urlbar-security" id="url-security" aria-hidden="true"></span>
+      <div class="samo-urlbar-field">
+        <input class="samo-urlbar-input" id="url-input" type="text" spellcheck="false" autocomplete="off"
+               autocapitalize="off" aria-label="Address and search bar" aria-autocomplete="list"
+               aria-haspopup="listbox" placeholder="Search or enter address">
+        <div class="samo-urlbar-display" id="url-display" aria-hidden="true"></div>
+      </div>
+      <button class="samo-btn samo-urlbar-chip samo-urlbar-zoom" id="url-zoom" hidden aria-label="Reset zoom"></button>
+      <button class="samo-btn samo-urlbar-action samo-urlbar-star" id="url-star" aria-label="Bookmark this tab">
+        <span class="samo-star-off" data-icon="star"></span>
+        <span class="samo-star-on" data-icon="star-filled"></span>
+      </button>
+      <div class="samo-progress" id="url-progress" aria-hidden="true"><div class="samo-progress-bar"></div></div>
+    </div>
+
+    <div class="samo-toolbar-end">
+      <div class="samo-toast-host" id="toast-host" aria-live="polite"></div>
+      <button class="samo-btn samo-downloads-btn" id="btn-downloads" aria-label="Downloads" hidden>
+        <svg class="samo-ring" viewBox="0 0 32 32" aria-hidden="true">
+          <circle class="samo-ring-track" cx="16" cy="16" r="13"></circle>
+          <circle class="samo-ring-value" cx="16" cy="16" r="13"></circle>
+        </svg>
+        <span data-icon="download"></span>
+      </button>
+      <button class="samo-btn" id="btn-menu" data-icon="menu" aria-label="Menu" aria-haspopup="menu"></button>
+    </div>
+  </div>
+
+  <div class="samo-findbar" id="findbar" hidden>
+    <div class="samo-findbar-field">
+      <span class="samo-findbar-icon" data-icon="search"></span>
+      <input class="samo-findbar-input" id="find-input" type="text" spellcheck="false" autocomplete="off"
+             aria-label="Find in page" placeholder="Find in page">
+      <span class="samo-findbar-count" id="find-count" aria-live="polite"></span>
+    </div>
+    <button class="samo-btn samo-find-case" id="find-case" aria-label="Match case" aria-pressed="false">Aa</button>
+    <span class="samo-findbar-sep" aria-hidden="true"></span>
+    <button class="samo-btn" id="find-prev" data-icon="chevron-down" data-flip aria-label="Previous match"></button>
+    <button class="samo-btn" id="find-next" data-icon="chevron-down" aria-label="Next match"></button>
+    <button class="samo-btn" id="find-close" data-icon="x" aria-label="Close find bar"></button>
+  </div>
+</div>
+</body>
+</html>
