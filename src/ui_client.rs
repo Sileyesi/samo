@@ -180,7 +180,7 @@ wrap_keyboard_handler! {
             &self,
             _browser: Option<&mut Browser>,
             event: Option<&KeyEvent>,
-            _os_event: Option<&mut sys::XEvent>,
+            _os_event: Option<&mut OsEvent>,
             _is_keyboard_shortcut: Option<&mut i32>,
         ) -> i32 {
             keys::on_pre_key_event(self.role.source(), event)

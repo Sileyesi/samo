@@ -3,6 +3,12 @@
 use cef::*;
 use std::sync::{Arc, Mutex, OnceLock};
 
+/// Native event passed to keyboard handlers (`XEvent` on Linux, `MSG` on Windows).
+#[cfg(windows)]
+pub type OsEvent = sys::MSG;
+#[cfg(not(windows))]
+pub type OsEvent = sys::XEvent;
+
 /// Log level from `SAMO_LOG` (error < warn < info < debug). Default: info.
 pub fn log_level() -> u8 {
     static LEVEL: OnceLock<u8> = OnceLock::new();

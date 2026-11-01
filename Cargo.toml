@@ -4,7 +4,7 @@ resolver = "3"
 
 [package]
 name = "samo"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Samo — a smooth, deeply customizable Chromium browser"
 license = "MIT"
